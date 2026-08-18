@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EventHub</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="navbar">
+    <a href="/eventos" class="logo">📅 EventHub</a>
+    <nav>
+      <% if (typeof user !== 'undefined' && user) { %>
+        <span>Olá, <%= user.nome %></span>
+        <a href="/eventos/novo">+ Novo Evento</a>
+        <a href="/logout">Sair</a>
+      <% } else { %>
+        <a href="/login">Entrar</a>
+        <a href="/cadastro">Cadastrar</a>
+      <% } %>
+    </nav>
+  </header>
+  <main class="container">
