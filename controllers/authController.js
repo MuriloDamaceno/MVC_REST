@@ -53,8 +53,7 @@ class AuthController {
       res.redirect('/login');
     } catch (erro) {
       console.error('[AuthController] cadastrar:', erro.message);
-      // DEBUG TEMPORÁRIO — reverter depois de descobrir o problema
-      res.render('cadastro', { erro: 'DEBUG: ' + (erro.code || 'SEM_CODIGO') + ' - ' + erro.message });
+        res.render('cadastro', { erro: 'Erro ao cadastrar. Tente novamente.' });
     }
   }
 
