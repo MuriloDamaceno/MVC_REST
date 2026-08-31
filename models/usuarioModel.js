@@ -1,57 +1,56 @@
 const conexao = require('../config/database');
 
 /**
- * @class InscricaoModel
- * @classdesc Gerencia as operações de persistência da entidade Inscrição no banco de dados MySQL (tabela `inscricoes`),
- * responsável por vincular participantes a eventos.
+ * @class UsuarioModel
+ * @classdesc Gerencia as operações de persistência da entidade Usuário no banco de dados MySQL (tabela `usuarios`).
  */
-class InscricaoModel {
+class UsuarioModel {
   /**
-   * Cria uma nova inscrição de um participante em um evento.
+   * Cria um novo usuário no banco de dados. A senha já deve chegar em formato hash (bcrypt).
    * @async
    * @method criar
-   * @param {Object} dadosInscricao - Dados da inscrição.
-   * @param {number} dadosInscricao.id_evento - ID do evento (FK para `eventos`).
-   * @param {number} dadosInscricao.id_participante - ID do usuário participante (FK para `usuarios`).
-   * @returns {Promise<number>} O ID (insertId) da inscrição recém-criada.
-   * @throws {Error} Caso o usuário já esteja inscrito (violação de UNIQUE KEY) ou a conexão falhe.
+   * @param {Object} dadosUsuario - Dados do usuário.
+   * @param {string} dadosUsuario.nome - Nome completo do usuário.
+   * @param {string} dadosUsuario.email - E-mail único do usuário.
+   * @param {string} dadosUsuario.senhaHash - Senha já criptografada com bcrypt.
+   * @param {string} [dadosUsuario.tipo='participante'] - Tipo do usuário: 'participante' ou 'organizador'.
+   * @returns {Promise<number>} O ID (insertId) do usuário recém-criado.
+   * @throws {Error} Caso o e-mail já exista (violação de UNIQUE KEY) ou a conexão falhe.
    */
-  static async criar({ id_evento, id_participante }) {
-    const sql = 'INSERT INTO inscricoes (id_evento, id_participante) VALUES (?, ?)';
-    const [resultado] = await conexao.execute(sql, [id_evento, id_participante]);
+  static async criar({ nome, email, senhaHash, tipo }) {
+    const sql = 'INSERT INTO usuarios (nome, email, senha, tipo) VALUES (?, ?, ?, ?)';
+    const [resultado] = await conexao.execute(sql, [nome, email, senhaHash, tipo || 'participante']);
     return resultado.insertId;
   }
 
   /**
-   * Lista todos os participantes inscritos em um evento específico, já unindo os dados do usuário.
+   * Busca um usuário pelo e-mail, retornando todos os campos (incluindo o hash da senha).
+   * Usado exclusivamente no fluxo de login para comparação com bcrypt.compare.
    * @async
-   * @method listarPorEvento
-   * @param {number} id_evento - ID do evento.
-   * @returns {Promise<Array<Object>>} Lista de inscrições com nome e e-mail do participante.
+   * @method buscarPorEmail
+   * @param {string} email - E-mail do usuário.
+   * @returns {Promise<Object|null>} O usuário encontrado (com senha em hash) ou null.
    * @throws {Error} Caso a conexão com o MySQL falhe.
    */
-  static async listarPorEvento(id_evento) {
-    const sql = `SELECT i.*, u.nome, u.email FROM inscricoes i
-                 JOIN usuarios u ON u.id_usuario = i.id_participante
-                 WHERE i.id_evento = ?`;
-    const [linhas] = await conexao.execute(sql, [id_evento]);
-    return linhas;
+  static async buscarPorEmail(email) {
+    const sql = 'SELECT * FROM usuarios WHERE email = ?';
+    const [linhas] = await conexao.execute(sql, [email]);
+    return linhas.length > 0 ? linhas[0] : null;
   }
 
   /**
-   * Verifica se um participante já está inscrito em um evento.
+   * Busca um usuário pelo ID, sem retornar o campo de senha.
    * @async
-   * @method jaInscrito
-   * @param {number} id_evento - ID do evento.
-   * @param {number} id_participante - ID do usuário participante.
-   * @returns {Promise<boolean>} true se já existe inscrição para esse par evento/participante.
+   * @method buscarPorId
+   * @param {number} id - ID do usuário.
+   * @returns {Promise<Object|null>} O usuário encontrado (sem senha) ou null.
    * @throws {Error} Caso a conexão com o MySQL falhe.
    */
-  static async jaInscrito(id_evento, id_participante) {
-    const sql = 'SELECT * FROM inscricoes WHERE id_evento = ? AND id_participante = ?';
-    const [linhas] = await conexao.execute(sql, [id_evento, id_participante]);
-    return linhas.length > 0;
+  static async buscarPorId(id) {
+    const sql = 'SELECT id_usuario, nome, email, tipo FROM usuarios WHERE id_usuario = ?';
+    const [linhas] = await conexao.execute(sql, [id]);
+    return linhas.length > 0 ? linhas[0] : null;
   }
 }
 
-module.exports = InscricaoModel;
+module.exports = UsuarioModel;
