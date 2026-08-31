@@ -53,7 +53,7 @@ class AuthController {
       res.redirect('/login');
     } catch (erro) {
       console.error('[AuthController] cadastrar:', erro.message);
-        res.render('cadastro', { erro: 'Erro ao cadastrar. Tente novamente.' });
+      res.render('cadastro', { erro: 'Erro ao cadastrar. Tente novamente.' });
     }
   }
 
@@ -89,7 +89,7 @@ class AuthController {
       res.redirect('/eventos');
     } catch (erro) {
       console.error('[AuthController] login:', erro.message);
-      res.render('login', { erro: 'DEBUG: ' + (erro.code || 'SEM_CODIGO') + ' - ' + erro.message });
+      res.render('login', { erro: 'Erro ao processar login.' });
     }
   }
 
