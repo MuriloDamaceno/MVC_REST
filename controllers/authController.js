@@ -1,17 +1,38 @@
 const bcrypt = require('bcryptjs');
 const UsuarioModel = require('../models/usuarioModel');
 
+/**
+ * @controller AuthController
+ * @description Intercepta as requisições HTTP de autenticação: cadastro, login e logout,
+ * gerenciando o hash de senhas (bcrypt) e a sessão do usuário (express-session).
+ */
 class AuthController {
+  /**
+   * Renderiza a tela de login.
+   * @param {import('express').Request} req - Objeto de Requisição do Express.
+   * @param {import('express').Response} res - Objeto de Resposta do Express.
+   * @returns {void} Renderiza a view `login`.
+   */
   telaLogin(req, res) {
     res.render('login', { erro: null });
   }
 
+  /**
+   * Renderiza a tela de cadastro.
+   * @param {import('express').Request} req - Objeto de Requisição do Express.
+   * @param {import('express').Response} res - Objeto de Resposta do Express.
+   * @returns {void} Renderiza a view `cadastro`.
+   */
   telaCadastro(req, res) {
     res.render('cadastro', { erro: null });
   }
 
   /**
    * Processa o cadastro de um novo usuário, aplicando hash na senha antes de salvar.
+   * @async
+   * @param {import('express').Request} req - Objeto de Requisição do Express. Espera `nome`, `email`, `senha` e `tipo` em `req.body`.
+   * @param {import('express').Response} res - Objeto de Resposta do Express.
+   * @returns {Promise<void>} Redireciona para `/login` em caso de sucesso, ou renderiza o formulário com erro.
    */
   async cadastrar(req, res) {
     try {
@@ -37,7 +58,12 @@ class AuthController {
   }
 
   /**
-   * Valida as credenciais e cria a sessão do usuário logado.
+   * Valida as credenciais do usuário (comparando a senha com o hash salvo via bcrypt.compare)
+   * e cria a sessão do usuário logado.
+   * @async
+   * @param {import('express').Request} req - Objeto de Requisição do Express. Espera `email` e `senha` em `req.body`.
+   * @param {import('express').Response} res - Objeto de Resposta do Express.
+   * @returns {Promise<void>} Redireciona para `/eventos` em caso de sucesso, ou renderiza o login com erro.
    */
   async login(req, res) {
     try {
@@ -67,6 +93,12 @@ class AuthController {
     }
   }
 
+  /**
+   * Destrói a sessão do usuário e limpa o cookie de sessão, efetuando o logout.
+   * @param {import('express').Request} req - Objeto de Requisição do Express.
+   * @param {import('express').Response} res - Objeto de Resposta do Express.
+   * @returns {void} Redireciona para `/login` após destruir a sessão.
+   */
   logout(req, res) {
     req.session.destroy((erro) => {
       if (erro) return res.status(500).send('Erro ao sair.');

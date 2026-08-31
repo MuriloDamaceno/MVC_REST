@@ -1,0 +1,28 @@
+<%- include('../partials/header') %>
+
+<div class="form-box">
+  <h1><%= evento ? 'Editar Evento' : 'Novo Evento' %></h1>
+
+  <% if (erro) { %>
+    <p class="erro"><%= erro %></p>
+  <% } %>
+
+  <form method="POST" action="<%= evento ? '/eventos/' + evento.id_evento + '/editar' : '/eventos/novo' %>">
+    <label for="titulo">Título</label>
+    <input type="text" id="titulo" name="titulo" value="<%= evento ? evento.titulo : '' %>" required>
+
+    <label for="descricao">Descrição</label>
+    <textarea id="descricao" name="descricao" rows="4"><%= evento ? evento.descricao : '' %></textarea>
+
+    <label for="data_evento">Data do Evento</label>
+    <input type="date" id="data_evento" name="data_evento"
+           value="<%= evento ? evento.data_evento.toISOString().split('T')[0] : '' %>" required>
+
+    <label for="local_evento">Local</label>
+    <input type="text" id="local_evento" name="local_evento" value="<%= evento ? evento.local_evento : '' %>" required>
+
+    <button type="submit"><%= evento ? 'Salvar Alterações' : 'Criar Evento' %></button>
+  </form>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,19 @@
+<%- include('../partials/header') %>
+
+<h1>Eventos</h1>
+
+<div class="grid-eventos">
+  <% eventos.forEach(evento => { %>
+    <div class="card-evento">
+      <h3><a href="/eventos/<%= evento.id_evento %>"><%= evento.titulo %></a></h3>
+      <p><%= evento.local_evento %></p>
+      <p><%= new Date(evento.data_evento).toLocaleDateString('pt-BR') %></p>
+    </div>
+  <% }) %>
+
+  <% if (eventos.length === 0) { %>
+    <p>Nenhum evento cadastrado ainda.</p>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>
