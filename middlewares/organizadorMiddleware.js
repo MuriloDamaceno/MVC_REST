@@ -6,7 +6,12 @@ function organizadorMiddleware(req, res, next) {
   if (req.session.user && req.session.user.tipo === 'organizador') {
     return next();
   }
-  return res.status(403).send('Acesso negado: apenas organizadores podem realizar esta ação.');
+  return res.status(403).render('erro', {
+    mensagem: 'Apenas organizadores podem realizar esta ação.',
+    user: req.session.user
+  });
 }
 
-module.exports = organizadorMiddleware;
+module.exports = organizadorMiddleware;git add .
+git commit -m "Adiciona pagina de erro estilizada para acesso negado"
+git push
