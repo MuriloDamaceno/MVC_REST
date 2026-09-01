@@ -12,6 +12,4 @@ function organizadorMiddleware(req, res, next) {
   });
 }
 
-module.exports = organizadorMiddleware;git add .
-git commit -m "Adiciona pagina de erro estilizada para acesso negado"
-git push
+module.exports = organizadorMiddleware;
